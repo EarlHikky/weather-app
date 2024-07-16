@@ -1,7 +1,6 @@
-# weather/views.py
-
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
+from .models import SearchHistory
 import requests
 
 
@@ -12,6 +11,12 @@ def get_weather(request):
     if request.method == 'POST':
         city = request.POST.get('city')
         weather_data = fetch_weather_data(city)
+
+
+        search_history, created = SearchHistory.objects.get_or_create(city=city)
+        search_history.search_count += 1
+        search_history.save()
+
         response = render(request, 'weather/index.html', {'weather_data': weather_data, 'last_city': city})
         response.set_cookie('last_city', city)
         return response
