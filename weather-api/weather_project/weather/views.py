@@ -12,7 +12,6 @@ def get_weather(request):
         city = request.POST.get('city')
         weather_data = fetch_weather_data(city)
 
-
         search_history, created = SearchHistory.objects.get_or_create(city=city)
         search_history.search_count += 1
         search_history.save()
@@ -55,3 +54,8 @@ def autocomplete_city(request):
             cities = [result['display_name'] for result in results]
             return JsonResponse(cities, safe=False)
     return JsonResponse([], safe=False)
+
+
+def search_statistics(request):
+    stats = SearchHistory.objects.all().values('city', 'search_count')
+    return JsonResponse(list(stats), safe=False)
