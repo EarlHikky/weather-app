@@ -1,3 +1,5 @@
+# weather/views.py
+
 from django.shortcuts import render
 from django.http import JsonResponse
 import requests
@@ -30,3 +32,15 @@ def fetch_weather_data(city):
                 'description': data['current_weather']['weathercode']
             }
     return None
+
+
+def autocomplete_city(request):
+    if 'term' in request.GET:
+        query = request.GET.get('term')
+        geocode_url = f'https://nominatim.openstreetmap.org/search?q={query}&format=json&limit=5'
+        geocode_response = requests.get(geocode_url)
+        if geocode_response.status_code == 200:
+            results = geocode_response.json()
+            cities = [result['display_name'] for result in results]
+            return JsonResponse(cities, safe=False)
+    return JsonResponse([], safe=False)
