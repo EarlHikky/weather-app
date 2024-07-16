@@ -1,16 +1,22 @@
 # weather/views.py
 
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import requests
 
 
 def get_weather(request):
     weather_data = None
+    last_city = request.COOKIES.get('last_city', '')
+
     if request.method == 'POST':
         city = request.POST.get('city')
         weather_data = fetch_weather_data(city)
-    return render(request, 'weather/index.html', {'weather_data': weather_data})
+        response = render(request, 'weather/index.html', {'weather_data': weather_data, 'last_city': city})
+        response.set_cookie('last_city', city)
+        return response
+
+    return render(request, 'weather/index.html', {'weather_data': weather_data, 'last_city': last_city})
 
 
 def fetch_weather_data(city):

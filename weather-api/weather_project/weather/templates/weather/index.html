@@ -16,7 +16,7 @@
             {% csrf_token %}
             <div class="form-group">
                 <label for="city">Enter city name:</label>
-                <input type="text" class="form-control" id="city" name="city" required>
+                <input type="text" class="form-control" id="city" name="city" value="{{ last_city }}" required>
             </div>
             <button type="submit" class="btn btn-primary">Get Weather</button>
         </form>
