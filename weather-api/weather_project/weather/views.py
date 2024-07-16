@@ -1,7 +1,12 @@
-from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
-from .models import SearchHistory
+from re import match
+from string import capwords, punctuation
+from urllib.parse import quote, unquote
+
 import requests
+from django.shortcuts import render
+from django.http import JsonResponse
+
+from .models import SearchHistory
 
 
 def get_weather(request):
@@ -10,17 +15,43 @@ def get_weather(request):
 
     if request.method == 'POST':
         city = request.POST.get('city')
+
+        if city.isdigit() or all(char in punctuation for char in city):
+            return render(request,
+                          'weather/index.html',
+                          {'error': 'Invalid city name.',
+                           'last_city': 'Enter a valid city name'}
+                          )
+
         weather_data = fetch_weather_data(city)
+        if not weather_data:
+            return render(request,
+                          'weather/index.html',
+                          {'weather_data': weather_data,
+                           'last_city': city}
+                          )
+
+        match_city = match(r'^[\w\s-]*\b', city)
+        if match_city:
+            city = capwords(match_city.group(0), sep='-')
 
         search_history, created = SearchHistory.objects.get_or_create(city=city)
         search_history.search_count += 1
         search_history.save()
 
-        response = render(request, 'weather/index.html', {'weather_data': weather_data, 'last_city': city})
-        response.set_cookie('last_city', city)
+        response = render(request,
+                          'weather/index.html',
+                          {'weather_data': weather_data,
+                           'last_city': city}
+                          )
+        response.set_cookie('last_city', quote(city))
         return response
 
-    return render(request, 'weather/index.html', {'weather_data': weather_data, 'last_city': last_city})
+    return render(request,
+                  'weather/index.html',
+                  {'weather_data': weather_data,
+                   'last_city': unquote(last_city)}
+                  )
 
 
 def fetch_weather_data(city):
