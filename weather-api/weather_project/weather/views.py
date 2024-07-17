@@ -3,12 +3,13 @@ from urllib.parse import quote, unquote
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
+from httpx import ConnectError, HTTPStatusError
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
 
 from .models import SearchHistory
 from .serializers import SearchHistorySerializer
-from .utils import save_search_history, fetch_weather_data, get_context, validate_city, httpx_get
+from .utils import save_search_history, fetch_weather_data, get_context, validate_city, httpx_get, get_geo_location
 
 
 class SearchHistoryAPIView(ListAPIView):
@@ -53,10 +54,9 @@ def get_weather(request: WSGIRequest) -> HttpResponse:
 def autocomplete_city(request: WSGIRequest) -> JsonResponse:
     if 'term' in request.GET:
         query = request.GET.get('term')
-        geocode_url = f'https://nominatim.openstreetmap.org/search?q={query}&format=json&limit=5'
-        geocode_response = httpx_get(geocode_url)
-        if geocode_response.status_code == 200:
-            results = geocode_response.json()
-            cities = [result['display_name'] for result in results]
-            return JsonResponse(cities, safe=False)
+        if validate_city(query):
+            results = get_geo_location(query, 5)
+            if results:
+                cities = [result['display_name'] for result in results]
+                return JsonResponse(cities, safe=False)
     return JsonResponse([], safe=False)
