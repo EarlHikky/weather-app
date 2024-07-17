@@ -15,17 +15,19 @@ def save_search_history(city: str) -> None:
 
 
 def fetch_weather_data(city: str) -> tuple[str | None, dict | None, bool | None]:
-    # with open(f'/home/earl/PycharmProjects/weather-api/weather_project/weather{city}.json', 'r', encoding='utf-8') as f:
-    #     weather_data = json.load(f)
-    #     return city, weather_data, None
+    with open(f'/home/earl/PycharmProjects/weather-api/weather_project/weather{city}.json', 'r', encoding='utf-8') as f: # TODO
+        weather_data = json.load(f)
+        return city, weather_data, None
 
     geocode_url = f'https://nominatim.openstreetmap.org/search?q={city}&format=json&limit=1'
     geocode_response = httpx_get(geocode_url)
-    if geocode_response.status_code == 403:
+    geo_status_code = geocode_response.status_code
+    if geo_status_code == 403:
         return None, None, True
 
-    if geocode_response.status_code == 200 and geocode_response.json():
-        location: dict = geocode_response.json()[0]
+    geocode_response_data: dict = geocode_response.json()
+    if geo_status_code == 200 and geocode_response_data:
+        location: dict = geocode_response_data[0]
         lat: str = location['lat']
         lon: str = location['lon']
         city_name: str = location.get('name', city)
@@ -35,7 +37,6 @@ def fetch_weather_data(city: str) -> tuple[str | None, dict | None, bool | None]
 
         if weather_response.status_code == 200:
             weather_data: dict = weather_response.json()
-            print(weather_data)
 
             # Сохранение данных в файл  # TODO
             filename = f'weather{city_name}.json'
