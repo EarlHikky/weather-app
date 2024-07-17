@@ -3,6 +3,7 @@ from urllib.parse import quote, unquote
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
 
 from .models import SearchHistory
@@ -13,6 +14,9 @@ from .utils import save_search_history, fetch_weather_data, get_context, validat
 class SearchHistoryAPIView(ListAPIView):
     queryset = SearchHistory.objects.all()
     serializer_class = SearchHistorySerializer
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['search_count', 'city']
+    ordering = ['-search_count']
 
 
 def render_weather_response(request: WSGIRequest, context: dict) -> HttpResponse:
@@ -20,7 +24,6 @@ def render_weather_response(request: WSGIRequest, context: dict) -> HttpResponse
 
 
 def get_weather(request: WSGIRequest) -> HttpResponse:
-    weather_data = None
     last_city = request.COOKIES.get('last_city', '')
 
     if request.method == 'POST':
