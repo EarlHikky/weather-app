@@ -1,4 +1,4 @@
-# Приложение погоды на Django с использованием Open Meteo API
+# [Приложение погоды на Django с использованием Open Meteo API](http://earlhikky91.pythonanywhere.com/)
 
 ## Реализованные функции
 1. **Интеграция с данными о погоде**: Используется [Open Meteo API](https://open-meteo.com/) для получения информации о погоде.
@@ -61,3 +61,6 @@
     ```plaintext
     http://127.0.0.1:8000/api/search-history/
     ```
+- [Пример реализации](http://earlhikky91.pythonanywhere.com/)
+
+    
