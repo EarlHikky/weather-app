@@ -59,7 +59,7 @@
 - **API-эндпоинт истории поиска**:
   - Для получения истории поиска используйте API-эндпоинт:
     ```plaintext
-    http://127.0.0.1:8000/api/search-history/
+    http://127.0.0.1:8000/api/v1/search-list/
     ```
 - [Пример реализации](http://earlhikky91.pythonanywhere.com/)
 
