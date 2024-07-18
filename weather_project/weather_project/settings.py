@@ -19,12 +19,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_KEY')
+SECRET_KEY = os.getenv('DJANGO_KEY', 'django-insecure-=g#$kzwvd)4$x&()(szl25pu6hw#pqiok8w^z16=9ryu^if34c')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split()
+ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django_nose',
     'rest_framework',
     'weather.apps.WeatherConfig',
 ]
@@ -75,12 +74,8 @@ WSGI_APPLICATION = 'weather_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'mydatabase'),
-        'USER': os.environ.get('DB_USER', 'myuser'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'mypassword'),
-        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -124,7 +119,7 @@ STATIC_ROOT = os.environ.get('STATIC_ROOT', os.path.join(BASE_DIR, 'static'))
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-log_dir = os.path.join(BASE_DIR, 'logs')
+log_dir = os.path.join(BASE_DIR, 'logs/django/')
 log_file = os.path.join(log_dir, 'errors.log')
 if not os.path.exists(log_dir):
     os.makedirs(log_dir)
@@ -149,7 +144,7 @@ LOGGING = {
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/errors.log'),
+            'filename': os.path.join(BASE_DIR, 'logs/django/errors.log'),
             'formatter': 'verbose',
         },
     },

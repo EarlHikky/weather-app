@@ -3,13 +3,12 @@ from urllib.parse import quote, unquote
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from httpx import ConnectError, HTTPStatusError
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
 
 from .models import SearchHistory
 from .serializers import SearchHistorySerializer
-from .utils import save_search_history, fetch_weather_data, get_context, validate_city, httpx_get, get_geo_location
+from .utils import save_search_history, fetch_weather_data, get_context, validate_city, get_geo_location
 
 
 class SearchHistoryAPIView(ListAPIView):
