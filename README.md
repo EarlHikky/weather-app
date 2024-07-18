@@ -63,4 +63,5 @@
     ```
 - [Пример реализации](http://earlhikky91.pythonanywhere.com/)
 
+![Demo](demo.gif)
     
